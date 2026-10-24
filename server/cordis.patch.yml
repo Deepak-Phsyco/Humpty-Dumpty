@@ -1,0 +1,14 @@
+- insert:
+    # Restrict unnecessary agent execution tools for safe conversational guide
+    - id: tool-fs
+      disabled: true
+    - id: tool-fs-search
+      disabled: true
+    - id: tool-jobs
+      disabled: true
+    - id: tool-workflow
+      disabled: true
+    - id: tool-subagent
+      disabled: true
+    - id: tool-subagent-fork
+      disabled: true

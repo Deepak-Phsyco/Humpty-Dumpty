@@ -10,7 +10,8 @@ import {
   Bookmark, 
   History, 
   HelpCircle,
-  PlayCircle
+  PlayCircle,
+  Bot
 } from 'lucide-react';
 import { TRANSLATIONS } from '../lib/translations';
 
@@ -22,6 +23,7 @@ interface TopNavProps {
   onOpenAdmin: () => void;
   onOpenOnboarding: () => void;
   onOpenDemo: () => void;
+  onOpenChatbot: () => void;
   onNavigate: (screen: 'home' | 'scan' | 'library' | 'history' | 'bookmarks') => void;
   currentScreen: string;
 }
@@ -34,6 +36,7 @@ export const TopNav: React.FC<TopNavProps> = ({
   onOpenAdmin,
   onOpenOnboarding,
   onOpenDemo,
+  onOpenChatbot,
   onNavigate,
   currentScreen,
 }) => {
@@ -98,6 +101,17 @@ export const TopNav: React.FC<TopNavProps> = ({
             {isOnline ? <Wifi className="w-3.5 h-3.5 text-emerald-400" /> : <WifiOff className="w-3.5 h-3.5 text-amber-400" />}
             <span className="text-[11px] font-medium">{isOnline ? t.online : t.offline}</span>
           </div>
+
+          {/* AI Guide Button */}
+          <button
+            onClick={onOpenChatbot}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-brand-600/30 to-emerald-500/30 hover:from-brand-600/50 hover:to-emerald-500/50 text-brand-300 border border-brand-500/40 text-xs font-bold transition-all shadow-sm"
+            title="Ask LabLens AI Guide"
+          >
+            <Bot className="w-3.5 h-3.5 text-brand-400" />
+            <span className="hidden sm:inline">AI Guide</span>
+          </button>
+
 
           {/* Demo Mode Button */}
           <button

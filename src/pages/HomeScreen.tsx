@@ -8,9 +8,10 @@ import {
   ArrowRight, 
   Cpu, 
   Compass, 
-  Search,
-  CheckCircle2,
-  PlayCircle
+  Search, 
+  CheckCircle2, 
+  PlayCircle,
+  Bot
 } from 'lucide-react';
 import { Equipment } from '../types/equipment';
 import { TRANSLATIONS } from '../lib/translations';
@@ -22,6 +23,7 @@ interface HomeScreenProps {
   onSelectEquipment: (equipment: Equipment) => void;
   allEquipment: Equipment[];
   lang: 'en' | 'hi';
+  onOpenChatbot?: () => void;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -31,6 +33,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onSelectEquipment,
   allEquipment,
   lang,
+  onOpenChatbot,
 }) => {
   const t = TRANSLATIONS[lang];
 
@@ -86,7 +89,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </div>
 
           {/* Demo Mode Quick Link */}
-          <div className="pt-1">
+          <div className="pt-1 flex flex-wrap items-center justify-center gap-2">
             <button
               onClick={onOpenDemo}
               className="inline-flex items-center gap-2 text-xs text-amber-300 hover:text-amber-200 transition-colors bg-amber-500/10 px-3 py-1.5 rounded-xl border border-amber-500/20"
@@ -94,6 +97,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <PlayCircle className="w-4 h-4 text-amber-400" />
               <span>Judges / No camera? Launch <strong>Demo Simulation Mode</strong></span>
             </button>
+
+            {onOpenChatbot && (
+              <button
+                onClick={onOpenChatbot}
+                className="inline-flex items-center gap-1.5 text-xs text-brand-300 hover:text-white transition-colors bg-brand-500/10 hover:bg-brand-500/20 px-3 py-1.5 rounded-xl border border-brand-500/30"
+              >
+                <Bot className="w-4 h-4 text-brand-400" />
+                <span>Ask <strong>DeepSeek AI Guide</strong></span>
+              </button>
+            )}
           </div>
         </div>
 

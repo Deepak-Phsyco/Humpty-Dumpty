@@ -11,7 +11,8 @@ import {
   RefreshCw,
   Sliders,
   CheckCircle2,
-  CameraOff
+  CameraOff,
+  Bot
 } from 'lucide-react';
 import { cameraService } from '../lib/camera';
 import { detectionPipeline, DetectionResult } from '../lib/detection';
@@ -29,6 +30,7 @@ interface ScanScreenProps {
   onAcknowledgeSafety: (equipmentId: string) => void;
   demoEquipmentToSimulate?: Equipment | null;
   onClearDemoSimulation?: () => void;
+  onOpenChatbot?: (equipment?: Equipment | null) => void;
 }
 
 export const ScanScreen: React.FC<ScanScreenProps> = ({
@@ -39,6 +41,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({
   onAcknowledgeSafety,
   demoEquipmentToSimulate,
   onClearDemoSimulation,
+  onOpenChatbot,
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -350,14 +353,27 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({
           <span>{isLocked ? 'Instrument Locked' : 'Scanning Lab Objects...'}</span>
         </div>
 
-        {/* Manual Search Fallback Button */}
-        <button
-          onClick={onOpenManualSearch}
-          className="p-2.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-white/10 transition-colors"
-          title={t.manualSearch}
-        >
-          <Search className="w-4 h-4" />
-        </button>
+        <div className="flex items-center gap-1.5">
+          {/* Ask AI Guide Button */}
+          {onOpenChatbot && (
+            <button
+              onClick={() => onOpenChatbot(currentEquipment)}
+              className="p-2.5 rounded-xl bg-gradient-to-r from-brand-600/40 to-emerald-500/40 backdrop-blur-md border border-brand-500/40 text-brand-300 hover:text-white transition-all shadow-sm"
+              title="Ask LabLens AI Guide (DeepSeek Harness)"
+            >
+              <Bot className="w-4 h-4" />
+            </button>
+          )}
+
+          {/* Manual Search Fallback Button */}
+          <button
+            onClick={onOpenManualSearch}
+            className="p-2.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-white/10 transition-colors"
+            title={t.manualSearch}
+          >
+            <Search className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* AR Live Overlay */}
@@ -369,6 +385,7 @@ export const ScanScreen: React.FC<ScanScreenProps> = ({
         lang={lang}
         onAcknowledgeSafety={onAcknowledgeSafety}
         acknowledgedSafetyIds={acknowledgedSafetyIds}
+        onOpenChatbot={onOpenChatbot ? (eq) => onOpenChatbot(eq) : undefined}
       />
 
       {/* Low Confidence Top 3 Candidates Picker (<60% confidence) */}

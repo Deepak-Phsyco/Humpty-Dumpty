@@ -11,7 +11,8 @@ import { AdminModal } from './components/AdminModal';
 import { Equipment } from './types/equipment';
 import { initEquipmentDatabase, db, toggleBookmark } from './lib/db';
 import initialEquipmentData from './data/equipment.json';
-import { Download, Sparkles, X } from 'lucide-react';
+import { Download, Sparkles, X, Bot } from 'lucide-react';
+import { LabLensChatbot } from './components/LabLensChatbot';
 
 export const App: React.FC = () => {
   // Navigation State
@@ -35,10 +36,17 @@ export const App: React.FC = () => {
   // All Loaded Equipment from Dexie IndexedDB
   const [allEquipment, setAllEquipment] = useState<Equipment[]>(initialEquipmentData as unknown as Equipment[]);
 
-  // Modals
+  // Modals & Chatbot
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [chatActiveEquipment, setChatActiveEquipment] = useState<Equipment | null>(null);
+
+  const handleOpenChatbot = (equipment?: Equipment | null) => {
+    setChatActiveEquipment(equipment || selectedEquipment || demoEquipmentToSimulate || null);
+    setIsChatbotOpen(true);
+  };
 
   // PWA Install Prompt State
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -157,6 +165,7 @@ export const App: React.FC = () => {
         onOpenAdmin={() => setIsAdminOpen(true)}
         onOpenOnboarding={() => setIsOnboardingOpen(true)}
         onOpenDemo={() => setIsDemoOpen(true)}
+        onOpenChatbot={() => handleOpenChatbot()}
         onNavigate={(screen) => {
           if (screen === 'bookmarks') {
             setLibraryCategoryFilter('All');
@@ -182,6 +191,7 @@ export const App: React.FC = () => {
               setCurrentScreen('library');
             }}
             onOpenDemo={() => setIsDemoOpen(true)}
+            onOpenChatbot={() => handleOpenChatbot()}
             onSelectEquipment={handleOpenEquipmentDetail}
             allEquipment={allEquipment}
             lang={lang}
@@ -200,6 +210,7 @@ export const App: React.FC = () => {
             onAcknowledgeSafety={handleAcknowledgeSafety}
             demoEquipmentToSimulate={demoEquipmentToSimulate}
             onClearDemoSimulation={() => setDemoEquipmentToSimulate(null)}
+            onOpenChatbot={handleOpenChatbot}
           />
         )}
 
@@ -242,6 +253,41 @@ export const App: React.FC = () => {
           />
         )}
       </main>
+
+      {/* Floating LabLens AI Assistant Launcher (when chat is closed) */}
+      {!isChatbotOpen && (
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40">
+          <button
+            onClick={() => handleOpenChatbot()}
+            className="group relative flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-gradient-to-r from-brand-600 via-brand-500 to-emerald-400 hover:from-brand-500 hover:to-emerald-300 text-elevate-dark font-black text-xs shadow-2xl shadow-brand-500/40 border border-white/25 active:scale-95 transition-all"
+            title="Ask LabLens AI Guide (DeepSeek Harness)"
+          >
+            <div className="w-5 h-5 rounded-lg bg-elevate-dark/90 flex items-center justify-center">
+              <Bot className="w-3.5 h-3.5 text-brand-400 group-hover:rotate-12 transition-transform" />
+            </div>
+            <div className="flex flex-col text-left leading-tight">
+              <span className="font-extrabold tracking-tight">Ask Lab AI</span>
+              <span className="text-[9px] font-semibold opacity-90 truncate max-w-[110px]">
+                {chatActiveEquipment ? chatActiveEquipment.name : 'DeepSeek Guide'}
+              </span>
+            </div>
+            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-500"></span>
+            </span>
+          </button>
+        </div>
+      )}
+
+      {/* DeepSeek Harness AI Chatbot Modal */}
+      <LabLensChatbot
+        isOpen={isChatbotOpen}
+        onClose={() => setIsChatbotOpen(false)}
+        activeEquipment={chatActiveEquipment || selectedEquipment || demoEquipmentToSimulate || null}
+        onClearActiveEquipment={() => setChatActiveEquipment(null)}
+        lang={lang}
+        mode="modal"
+      />
 
       {/* Global Modals */}
       <DemoModeModal

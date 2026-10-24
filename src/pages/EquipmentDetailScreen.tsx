@@ -7,15 +7,17 @@ import {
   ListOrdered, 
   Sliders, 
   Info, 
-  Camera,
-  ExternalLink,
-  Award,
-  CheckCircle
+  Camera, 
+  ExternalLink, 
+  Award, 
+  CheckCircle,
+  Bot
 } from 'lucide-react';
 import { Equipment } from '../types/equipment';
 import { SafetyCard } from '../components/SafetyCard';
 import { StepsGuide } from '../components/StepsGuide';
 import { SpecsView, MoreInfoView } from '../components/SpecsView';
+import { LabLensChatbot } from '../components/LabLensChatbot';
 import { TRANSLATIONS } from '../lib/translations';
 
 interface EquipmentDetailScreenProps {
@@ -39,7 +41,7 @@ export const EquipmentDetailScreen: React.FC<EquipmentDetailScreenProps> = ({
   onAcknowledgeSafety,
   lang,
 }) => {
-  const [activeTab, setActiveTab] = useState<'safety' | 'steps' | 'specs' | 'more'>('safety');
+  const [activeTab, setActiveTab] = useState<'safety' | 'steps' | 'specs' | 'more' | 'ai'>('safety');
   const t = TRANSLATIONS[lang];
 
   const isSafetyAcknowledged = acknowledgedSafetyIds.has(equipment.id);
@@ -57,12 +59,25 @@ export const EquipmentDetailScreen: React.FC<EquipmentDetailScreenProps> = ({
         </button>
 
         <div className="flex items-center gap-2">
+          {/* Ask AI Button */}
+          <button
+            onClick={() => setActiveTab('ai')}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${
+              activeTab === 'ai'
+                ? 'bg-brand-500 text-elevate-dark border-brand-400 shadow-md shadow-brand-500/25'
+                : 'bg-brand-500/20 hover:bg-brand-500/30 text-brand-300 border-brand-500/40'
+            }`}
+          >
+            <Bot className="w-3.5 h-3.5" />
+            <span>Ask AI</span>
+          </button>
+
           {/* AR Scan Launch Button */}
           <button
             onClick={() => onOpenInAR(equipment)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-500/20 hover:bg-brand-500/30 text-brand-300 border border-brand-500/40 text-xs font-bold transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 text-xs font-bold transition-colors"
           >
-            <Camera className="w-3.5 h-3.5" />
+            <Camera className="w-3.5 h-3.5 text-brand-400" />
             <span>Open in AR</span>
           </button>
 
@@ -101,8 +116,8 @@ export const EquipmentDetailScreen: React.FC<EquipmentDetailScreenProps> = ({
           )}
         </div>
 
-        {/* 4 Tabs */}
-        <div className="grid grid-cols-4 gap-1 p-1 rounded-2xl bg-black/40 border border-white/10 pt-2">
+        {/* 5 Tabs including DeepSeek Harness AI Guide */}
+        <div className="grid grid-cols-5 gap-1 p-1 rounded-2xl bg-black/40 border border-white/10 pt-2">
           <button
             onClick={() => setActiveTab('safety')}
             className={`py-2 px-1 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all ${
@@ -152,6 +167,18 @@ export const EquipmentDetailScreen: React.FC<EquipmentDetailScreenProps> = ({
             <Info className="w-3.5 h-3.5 shrink-0" />
             <span className="truncate">{t.tabs.more}</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('ai')}
+            className={`py-2 px-1 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all ${
+              activeTab === 'ai'
+                ? 'bg-gradient-to-r from-brand-600/40 to-emerald-500/40 text-brand-300 border border-brand-500/50 shadow-sm'
+                : 'text-gray-400 hover:text-brand-300'
+            }`}
+          >
+            <Bot className="w-3.5 h-3.5 shrink-0 text-brand-400" />
+            <span className="truncate">AI Guide</span>
+          </button>
         </div>
       </div>
 
@@ -184,6 +211,16 @@ export const EquipmentDetailScreen: React.FC<EquipmentDetailScreenProps> = ({
 
         {activeTab === 'more' && (
           <MoreInfoView equipment={equipment} lang={lang} />
+        )}
+
+        {activeTab === 'ai' && (
+          <LabLensChatbot
+            isOpen={true}
+            onClose={() => setActiveTab('safety')}
+            activeEquipment={equipment}
+            lang={lang}
+            mode="embedded"
+          />
         )}
       </div>
     </div>

@@ -8,11 +8,12 @@ import {
   X, 
   RotateCw, 
   Compass, 
-  Eye,
-  CheckCircle,
-  ExternalLink,
-  ChevronDown,
-  ChevronUp
+  Eye, 
+  CheckCircle, 
+  ExternalLink, 
+  ChevronDown, 
+  ChevronUp,
+  Bot
 } from 'lucide-react';
 import { DetectionPrediction, Equipment } from '../types/equipment';
 import { SafetyCard } from './SafetyCard';
@@ -28,6 +29,7 @@ interface AROverlayProps {
   lang: 'en' | 'hi';
   onAcknowledgeSafety: (equipmentId: string) => void;
   acknowledgedSafetyIds: Set<string>;
+  onOpenChatbot?: (equipment: Equipment) => void;
 }
 
 export const AROverlay: React.FC<AROverlayProps> = ({
@@ -38,6 +40,7 @@ export const AROverlay: React.FC<AROverlayProps> = ({
   lang,
   onAcknowledgeSafety,
   acknowledgedSafetyIds,
+  onOpenChatbot,
 }) => {
   const [activeTab, setActiveTab] = useState<'safety' | 'steps' | 'specs' | 'more'>('safety');
   const [is3DMode, setIs3DMode] = useState(false);
@@ -132,6 +135,18 @@ export const AROverlay: React.FC<AROverlayProps> = ({
 
               {/* Header Action Buttons */}
               <div className="flex items-center gap-1.5">
+                {/* Ask DeepSeek AI Assistant */}
+                {onOpenChatbot && (
+                  <button
+                    onClick={() => onOpenChatbot(equipment)}
+                    className="p-2 rounded-xl bg-gradient-to-r from-brand-600/30 to-emerald-500/30 hover:from-brand-600/50 hover:to-emerald-500/50 text-brand-300 border border-brand-500/40 text-xs font-bold flex items-center gap-1 transition-all"
+                    title="Ask DeepSeek AI Assistant about this instrument"
+                  >
+                    <Bot className="w-3.5 h-3.5 text-brand-400" />
+                    <span className="text-[10px]">Ask AI</span>
+                  </button>
+                )}
+
                 {/* 3D Mode Toggle */}
                 <button
                   onClick={() => setIs3DMode(!is3DMode)}
